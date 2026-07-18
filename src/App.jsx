@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 // ИСПРАВЛЕННЫЙ ИМПОРТ: без пробелов в названиях!
-import { Fist, Folder, Star, Share2, Copy, Volume2, Trash2 } from 'lucide-react';
+import { Swords, Folder, Star, Share2, Copy, Volume2, Trash2 } from 'lucide-react';
 import { useJoke } from './hooks/useJoke';
 import { useFavorites } from './hooks/useFavorites';
 import JokeCard from './components/JokeCard';
@@ -62,7 +62,7 @@ export default function App() {
                 disabled={isLoading}
                 className="w-full py-4 bg-gradient-to-r from-red-900 to-red-950 text-white font-bold uppercase tracking-widest rounded-xl shadow-lg shadow-red-900/40 flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                <Fist className="w-5 h-5" /> Новая шутка
+                <Swords className="w-5 h-5" /> Новая шутка
               </motion.button>
               
               <div className="flex justify-center gap-4">
@@ -155,7 +155,7 @@ export default function App() {
       <nav className="fixed bottom-0 left-0 right-0 bg-neutral-950 border-t border-amber-500/20 backdrop-blur-lg z-50">
         <div className="max-w-md mx-auto flex justify-around items-center h-16">
           {[
-            { id: 'jokes', icon: Fist, label: 'Шутки' },
+            { id: 'jokes', icon: Swords, label: 'Шутки' },
             { id: 'categories', icon: Folder, label: 'Категории' },
             { id: 'favorites', icon: Star, label: 'Избранное' },
           ].map(tab => (
