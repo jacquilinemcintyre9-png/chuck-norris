@@ -3,95 +3,107 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 const Card = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 32px;
-  padding: 32px 24px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(40px) saturate(1.4);
+  -webkit-backdrop-filter: blur(40px) saturate(1.4);
+  border-radius: 40px;
+  padding: 36px 28px 28px;
   width: 100%;
-  max-width: 320px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  max-width: 340px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 30px 60px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 0 1px rgba(255, 255, 255, 0.02);
   position: relative;
   text-align: center;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Дополнительная подсветка сверху */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.15), transparent);
+  }
 `;
 
 const Quote = styled.span`
-  font-size: 48px;
+  font-size: 56px;
   position: absolute;
-  opacity: 0.12;
+  opacity: 0.06;
   line-height: 1;
-  color: #D4AF37;
+  color: #d4af37;
   font-family: 'Georgia', serif;
-  top: 8px;
-  left: 16px;
+  top: 4px;
+  left: 20px;
 `;
 
 const QuoteBottom = styled(Quote)`
   top: auto;
-  bottom: 8px;
-  right: 16px;
+  bottom: 4px;
+  right: 20px;
   left: auto;
   transform: rotate(180deg);
 `;
 
-const Text = styled.p`
-  font-size: 16px;
-  line-height: 1.7;
+const Text = styled(motion.p)`
+  font-size: 17px;
+  line-height: 1.8;
   color: rgba(255, 255, 255, 0.92);
-  padding: 8px 0;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  font-weight: 400;
+  padding: 12px 4px 8px;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  font-weight: 350;
+  letter-spacing: 0.01em;
 `;
 
 const Meta = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 `;
 
 const Tag = styled.span`
-  font-size: 10px;
-  color: #D4AF37;
+  font-size: 9px;
+  color: rgba(212, 175, 55, 0.5);
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   font-family: 'Oswald', sans-serif;
-  opacity: 0.6;
+  font-weight: 300;
 `;
 
 const Dot = styled.div`
-  width: 4px;
-  height: 4px;
-  background: #D4AF37;
+  width: 3px;
+  height: 3px;
+  background: rgba(212, 175, 55, 0.2);
   border-radius: 50%;
-  opacity: 0.4;
 `;
 
-// 👇 ГЛАВНОЕ: правильное объявление компонента
-// Вариант 1: функциональное выражение (без типов, подходит для JS)
-interface JokeCardProps {
-  joke: string;
-  loading: boolean;
-}
-
-const JokeCard: React.FC<JokeCardProps> = ({ joke, loading }) => {
+export default function JokeCard({ joke, loading }) {
   return (
     <Card
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+      initial={{ opacity: 0, y: 30, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -30, scale: 0.96 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
       key={joke}
     >
       <Quote>❝</Quote>
       <QuoteBottom>❞</QuoteBottom>
-      <Text>{loading ? 'Загрузка...' : joke}</Text>
+      <Text
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+      >
+        {loading ? 'Загрузка...' : joke}
+      </Text>
       <Meta>
         <Tag>Факт</Tag>
         <Dot />
@@ -99,6 +111,4 @@ const JokeCard: React.FC<JokeCardProps> = ({ joke, loading }) => {
       </Meta>
     </Card>
   );
-};
-
-export default JokeCard;
+}
