@@ -2,18 +2,18 @@ import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyles = createGlobalStyle`
   * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
   }
 
   html, body {
     height: 100%;
-    overflow: hidden;
-    font-family: 'Roboto', sans-serif;
     background: #0a0a0a;
-    color: #ffffff;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    overflow: hidden;
   }
 
   #root {
@@ -22,23 +22,16 @@ export const GlobalStyles = createGlobalStyle`
     margin: 0 auto;
     background: #0a0a0a;
     position: relative;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
   }
 
-  /* Едва заметный градиент для глубины */
+  /* Лёгкий градиент для глубины */
   #root::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.03), transparent 60%);
+    background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.04), transparent 60%);
     pointer-events: none;
-    z-index: 0;
-  }
-
-  #root > * {
-    position: relative;
-    z-index: 1;
   }
 `;

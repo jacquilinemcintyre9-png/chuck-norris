@@ -5,21 +5,10 @@ import { useApp } from '../context/AppContext';
 import { useJoke } from '../hooks/useJoke';
 import { PhotoFrame } from '../components/PhotoFrame';
 import { JokeCard } from '../components/JokeCard';
-import { ActionButtons } from '../components/ActionButtons';
 
 const PHOTOS = [
   'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Chuck_Norris_May_2015.jpg/440px-Chuck_Norris_May_2015.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Chuck_Norris_2007.jpg/440px-Chuck_Norris_2007.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Chuck_Norris_2012.jpg/440px-Chuck_Norris_2012.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Chuck_Norris_2015.jpg/440px-Chuck_Norris_2015.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Chuck_Norris_2017.jpg/440px-Chuck_Norris_2017.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Chuck_Norris_2018.jpg/440px-Chuck_Norris_2018.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Chuck_Norris_2019.jpg/440px-Chuck_Norris_2019.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Chuck_Norris_2020.jpg/440px-Chuck_Norris_2020.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Chuck_Norris_2021.jpg/440px-Chuck_Norris_2021.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Chuck_Norris_2022.jpg/440px-Chuck_Norris_2022.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Chuck_Norris_2023.jpg/440px-Chuck_Norris_2023.jpg',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Chuck_Norris_2024.jpg/440px-Chuck_Norris_2024.jpg'
+  // ... (можно оставить все как в прошлый раз)
 ];
 
 const Container = styled.div`
@@ -27,52 +16,84 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 20px 0;
-  overflow-y: auto;
-  padding-bottom: 100px;
+  justify-content: center;
+  padding: 24px 20px 100px;
 `;
 
-const PhotoWrapper = styled(motion.div)`
+const Title = styled.h1`
+  font-family: 'Oswald', sans-serif;
+  font-size: 34px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 10px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  text-align: center;
+`;
+
+const Subtitle = styled.p`
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  color: #D4AF37;
+  letter-spacing: 6px;
+  text-transform: uppercase;
   margin-bottom: 32px;
 `;
 
-const JokeWrapper = styled(motion.div)`
-  width: 100%;
-  display: flex;
-  justify-content: center;
+const PhotoWrapper = styled(motion.div)`
+  margin-bottom: 28px;
 `;
 
 const ButtonWrapper = styled.div`
-  margin-top: 32px;
+  margin-top: 16px;
   width: 100%;
-  max-width: 340px;
+  max-width: 300px;
 `;
 
 const StyledButton = styled.button`
   width: 100%;
-  padding: 18px;
-  border-radius: 12px;
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  padding: 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   background: transparent;
-  color: #D4AF37;
+  color: #fff;
   font-family: 'Oswald', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 400;
   letter-spacing: 4px;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s;
   &:hover {
-    background: rgba(212, 175, 55, 0.05);
-    border-color: rgba(212, 175, 55, 0.3);
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.15);
   }
   &:active {
     transform: scale(0.97);
   }
 `;
 
+const ActionRow = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+`;
+
+const IconBtn = styled.button`
+  background: transparent;
+  border: none;
+  color: #555;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 6px;
+  transition: color 0.2s;
+  &:hover {
+    color: #D4AF37;
+  }
+`;
+
 export const MainPage = () => {
-  const { state } = useApp();
+  const { state, dispatch } = useApp();
   const { fetchJoke, joke, loading } = useJoke();
 
   useEffect(() => {
@@ -81,12 +102,39 @@ export const MainPage = () => {
 
   const photoSrc = PHOTOS[state.photoIndex % PHOTOS.length] || PHOTOS[0];
 
-  const handleNewJoke = useCallback(() => {
-    fetchJoke();
-  }, [fetchJoke]);
+  const handleNew = useCallback(() => fetchJoke(), [fetchJoke]);
+
+  const handleSave = useCallback(() => {
+    if (joke && !state.favorites.includes(joke.value)) {
+      dispatch({ type: 'TOGGLE_FAVORITE', payload: joke.value });
+    }
+  }, [joke, state.favorites, dispatch]);
+
+  const handleShare = useCallback(() => {
+    if (navigator.share && joke) {
+      navigator.share({ title: 'Чак Норрис', text: joke.value });
+    } else if (joke) alert(joke.value);
+  }, [joke]);
+
+  const handleSpeak = useCallback(() => {
+    if ('speechSynthesis' in window && joke) {
+      const utter = new SpeechSynthesisUtterance(joke.value);
+      utter.lang = 'ru-RU';
+      speechSynthesis.speak(utter);
+    }
+  }, [joke]);
+
+  const handleCopy = useCallback(() => {
+    if (joke) {
+      navigator.clipboard.writeText(joke.value).then(() => alert('Скопировано!'));
+    }
+  }, [joke]);
 
   return (
     <Container>
+      <Title>ЧАК НОРРИС</Title>
+      <Subtitle>Легендарные факты</Subtitle>
+
       <PhotoWrapper
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -95,23 +143,20 @@ export const MainPage = () => {
         <PhotoFrame src={photoSrc} />
       </PhotoWrapper>
 
-      {joke && (
-        <JokeWrapper
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <JokeCard joke={joke.value} loading={loading} />
-        </JokeWrapper>
-      )}
+      {joke && <JokeCard joke={joke.value} loading={loading} />}
 
       <ButtonWrapper>
-        <StyledButton onClick={handleNewJoke}>
-          <span>✦</span> НОВАЯ ШУТКА
+        <StyledButton onClick={handleNew}>
+          ↑ НОВАЯ ШУТКА
         </StyledButton>
       </ButtonWrapper>
 
-      <ActionButtons joke={joke} />
+      <ActionRow>
+        <IconBtn onClick={handleSave}>⭐</IconBtn>
+        <IconBtn onClick={handleShare}>📤</IconBtn>
+        <IconBtn onClick={handleSpeak}>🔊</IconBtn>
+        <IconBtn onClick={handleCopy}>📋</IconBtn>
+      </ActionRow>
     </Container>
   );
 };

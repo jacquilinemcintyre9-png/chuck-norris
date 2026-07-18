@@ -7,25 +7,13 @@ const rotate = keyframes`
 `;
 
 const Frame = styled.div`
-  width: 120px;
-  height: 120px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
-  padding: 3px;
+  padding: 4px;
   background: linear-gradient(135deg, #D4AF37, #B8860B, #D4AF37);
   animation: ${rotate} 12s linear infinite;
-  position: relative;
-  flex-shrink: 0;
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.15);
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: -6px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(212, 175, 55, 0.08), transparent 70%);
-    z-index: -1;
-    filter: blur(10px);
-  }
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
 `;
 
 const Img = styled.img`
@@ -33,15 +21,12 @@ const Img = styled.img`
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  object-position: center top;
-  border: 2px solid #0a0a0a;
+  border: 3px solid #0a0a0a;
   display: block;
 `;
 
-export const PhotoFrame = React.memo(({ src }) => {
-  return (
-    <Frame>
-      <Img src={src} alt="Chuck Norris" />
-    </Frame>
-  );
-});
+export const PhotoFrame = React.memo(({ src }) => (
+  <Frame>
+    <Img src={src} alt="Chuck Norris" />
+  </Frame>
+));
