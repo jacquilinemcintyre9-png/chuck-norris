@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+// ИСПРАВЛЕННЫЙ ИМПОРТ: без пробелов в названиях!
 import { Fist, Folder, Star, Share2, Copy, Volume2, Trash2 } from 'lucide-react';
 import { useJoke } from './hooks/useJoke';
 import { useFavorites } from './hooks/useFavorites';
@@ -19,7 +20,9 @@ export default function App() {
   const { joke, isLoading, fetchJoke } = useJoke();
   const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
 
-  useEffect(() => { if (!joke) fetchJoke(); }, [joke, fetchJoke]);
+  useEffect(() => { 
+    if (!joke) fetchJoke(); 
+  }, [joke, fetchJoke]);
 
   const handleAction = useCallback((action) => {
     if (!joke) return;
