@@ -1,42 +1,50 @@
-import { useCallback } from 'react';
-import { useApp } from '../context/AppContext';
+import { useState, useCallback } from 'react';
+
+// 1. Описываем тип (интерфейс) нашей шутки
+interface Joke {
+  id?: string;
+  value: string;
+  categories: string[];
+  translated?: string; // Добавил на случай, если вы будете добавлять перевод
+}
 
 const FALLBACK_JOKES = [
   'Чак Норрис считал до бесконечности. Дважды.',
   'Чак Норрис может делить на ноль.',
   'Чак Норрис не спит. Он ждёт.',
-  'Чак Норрис не читает книги. Он смотрит на них, пока они не выдают всю информацию.',
-  'Чак Норрис может выжать апельсиновый сок из лимона.',
-  'Чак Норрис может построить снеговика из дождя.',
-  'Чак Норрис не отжимается. Он отталкивает Землю вниз.',
-  'Чак Норрис может хлопнуть вращающуюся дверь.',
-  'Чак Норрис не использует GPS. Места сами его находят.',
-  'Новогодняя ёлка Чака Норриса: 100 метров высотой, 103 856 игрушек, 262 звезды и слишком много подарков, чтобы их сосчитать.',
+  'Чак Норрис может выжать апельсиновый сок из лимона.'
 ];
 
 export function useJoke() {
-  const { state, dispatch } = useApp();
+  // 2. Указываем TypeScript, что joke может быть объектом Joke или null
+  const [joke, setJoke] = useState<Joke | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchJoke = useCallback(
-    async (category = '') => {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      try {
-        const url = category
-          ? `https://api.chucknorris.io/jokes/random?category=${category}`
-          : 'https://api.chucknorris.io/jokes/random';
-        const res = await fetch(url);
-        const data = await res.json();
-        dispatch({ type: 'SET_JOKE', payload: data });
-        dispatch({ type: 'NEXT_PHOTO' });
-      } catch (e) {
-        const fallback = FALLBACK_JOKES[Math.floor(Math.random() * FALLBACK_JOKES.length)];
-        dispatch({ type: 'SET_JOKE', payload: { value: fallback } });
-      } finally {
-        dispatch({ type: 'SET_LOADING', payload: false });
-      }
-    },
-    [dispatch]
-  );
+  const fetchJoke = useCallback(async (category = '') => {
+    setIsLoading(true);
+    try {
+      const url = category 
+        ? `https://api.chucknorris.io/jokes/random?category=${category}`
+        : 'https://api.chucknorris.io/jokes/random';
+      
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network error');
+      const data = await response.json();
+      
+      // data уже соответствует структуре Joke (у API есть id, value, categories)
+      setJoke(data);
+    } catch (err) {
+      const randomFallback = FALLBACK_JOKES[Math.floor(Math.random() * FALLBACK_JOKES.length)];
+      // 3. Теперь TypeScript знает, что этот объект разрешен, так как он совпадает с интерфейсом Joke
+      setJoke({ 
+        value: randomFallback, 
+        categories: ['legacy'],
+        id: 'fallback-' + Date.now() // Добавляем временный id для совместимости
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-  return { fetchJoke, joke: state.joke, loading: state.loading };
+  return { joke, isLoading, fetchJoke };
 }
