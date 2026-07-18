@@ -2,8 +2,8 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { MainPage } from './pages/MainPage';
-import  CategoriesPage  from './pages/CategoriesPage';
-import  FavoritesPage  from './pages/FavoritesPage';
+import CategoriesPage from './pages/CategoriesPage';
+import FavoritesPage from './pages/FavoritesPage';
 import { Navigation } from './components/Navigation';
 
 function App() {

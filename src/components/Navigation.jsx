@@ -8,10 +8,10 @@ const Nav = styled.nav`
   left: 0;
   right: 0;
   height: 70px;
-  background: rgba(13, 13, 13, 0.8);
+  background: rgba(10, 10, 15, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 0, 0, 0.1);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -25,13 +25,14 @@ const NavItem = styled(NavLink)`
   gap: 2px;
   padding: 8px 20px;
   border-radius: 16px;
-  color: #71797E;
+  color: #4a4a5a;
   text-decoration: none;
   transition: all 0.3s ease;
   font-family: 'Oswald', sans-serif;
   &.active {
-    color: #D4AF37;
-    background: rgba(212, 175, 55, 0.1);
+    color: #ff0000;
+    text-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    background: rgba(255, 0, 0, 0.05);
   }
   .icon {
     font-size: 24px;

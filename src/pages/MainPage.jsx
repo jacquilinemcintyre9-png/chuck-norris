@@ -22,24 +22,18 @@ const PHOTOS = [
   'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Chuck_Norris_2024.jpg/440px-Chuck_Norris_2024.jpg'
 ];
 
-const neonGlow = keyframes`
-  0% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
-  50% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.2); }
-  100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
-`;
-
-const borderGlow = keyframes`
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+const weaponCharge = keyframes`
+  0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(255, 0, 0, 0.8), 0 0 80px rgba(212, 175, 55, 0.3); }
+  100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.2); }
 `;
 
 const GlowWrapper = styled.div`
   padding: 3px;
-  background: linear-gradient(90deg, #D4AF37, #FFF8DC, #D4AF37, #B8860B, #D4AF37);
+  background: linear-gradient(90deg, #ff0000, #D4AF37, #ff0000);
   background-size: 300% 100%;
   border-radius: 20px;
-  animation: ${borderGlow} 4s ease-in-out infinite, ${neonGlow} 2s ease-in-out infinite;
+  animation: weaponCharge 2s ease-in-out infinite;
   width: 100%;
   max-width: 340px;
   transition: transform 0.2s;
@@ -47,7 +41,7 @@ const GlowWrapper = styled.div`
     transform: scale(1.03);
   }
   &:active {
-    transform: scale(0.97);
+    transform: scale(0.95);
   }
 `;
 
@@ -56,8 +50,8 @@ const StyledButton = styled.button`
   padding: 20px;
   border-radius: 18px;
   border: none;
-  background: linear-gradient(135deg, #0D0D0D, #1A1A1A);
-  color: #D4AF37;
+  background: linear-gradient(135deg, #0a0a0f, #1a0a0a);
+  color: #ff0000;
   font-family: 'Oswald', sans-serif;
   font-size: 20px;
   font-weight: 700;
@@ -68,9 +62,10 @@ const StyledButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 14px;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  text-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
   &:active {
-    background: #2A2A2A;
+    background: #1a0a0a;
   }
 `;
 
@@ -118,7 +113,7 @@ export const MainPage = () => {
   return (
     <Container>
       <PhotoWrapper
-        initial={{ scale: 0.6, opacity: 0 }}
+        initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 25 }}
       >
@@ -138,7 +133,7 @@ export const MainPage = () => {
       <ButtonWrapper>
         <GlowWrapper>
           <StyledButton onClick={handleNewJoke}>
-            <span>👊</span> НОВАЯ ШУТКА
+            <span>⚡</span> НОВАЯ ШУТКА
           </StyledButton>
         </GlowWrapper>
       </ButtonWrapper>
