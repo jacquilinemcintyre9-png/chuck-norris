@@ -1,18 +1,240 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0D0D0D" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-    <title>Чак Норрис — Легендарные шутки</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Чак Норрис</title>
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Подключаем Tailwind CSS мгновенно через CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    /* Кастомные анимации, которые Tailwind не покрывает */
+    @keyframes rotate { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+    @keyframes float { 0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } }
+    @keyframes glow { 0%, 100% { box-shadow: 0 0 50px rgba(212, 175, 55, 0.6); } 50% { box-shadow: 0 0 70px rgba(212, 175, 55, 0.9); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .circle-anim { animation: rotate 20s linear infinite; }
+    .circle-anim-rev { animation: rotate 25s linear infinite reverse; }
+    .particle { animation: float 12s infinite; }
+    .glow-anim { animation: glow 3s ease-in-out infinite; }
+    .spin-anim { animation: spin 1s linear infinite; }
+    .fade-in { animation: fadeIn 0.4s ease; }
+    
+    /* Скрываем скроллбар для красоты */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-black text-white overflow-hidden font-sans">
+
+  <div class="max-w-[430px] mx-auto h-screen relative bg-gradient-to-b from-[#0a0a0a] to-[#1a0a0a] overflow-hidden">
+    
+    <!-- Фоновые круги -->
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none z-0">
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full border-2 border-[rgba(212,175,55,0.4)] shadow-[0_0_40px_rgba(212,175,55,0.2)] circle-anim"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[360px] h-[360px] rounded-full border-2 border-[rgba(212,175,55,0.25)] circle-anim-rev"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full border-2 border-[rgba(212,175,55,0.15)] circle-anim"></div>
+    </div>
+
+    <!-- Частицы (генерируются JS) -->
+    <div id="particles" class="fixed w-full h-full pointer-events-none z-1"></div>
+
+    <!-- Загрузка -->
+    <div id="loader" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col items-center">
+      <div class="w-10 h-10 border-[3px] border-[rgba(212,175,55,0.3)] border-t-[#D4AF37] rounded-full spin-anim"></div>
+      <div class="mt-3 text-xs text-[#D4AF37] tracking-widest">ЗАГРУЗКА...</div>
+    </div>
+
+    <!-- Уведомление -->
+    <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 translate-y-10 bg-[rgba(212,175,55,0.95)] text-black px-5 py-2.5 rounded-full text-xs font-bold opacity-0 transition-all duration-300 z-50 pointer-events-none"></div>
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <div id="screen-main" class="screen active relative z-10 h-full flex flex-col items-center pt-16 px-5 pb-24 fade-in">
+      
+      <!-- Фото -->
+      <div class="mb-6 relative">
+        <div class="w-[120px] h-[120px] rounded-full p-1 bg-gradient-to-tr from-[#D4AF37] via-[#FFD700] to-[#D4AF37] shadow-[0_0_50px_rgba(212,175,55,0.6)] glow-anim">
+          <img id="chuckPhoto" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Chuck_Norris_May_2015.jpg/440px-Chuck_Norris_May_2015.jpg" alt="Чак" class="w-full h-full rounded-full object-cover border-[3px] border-[#0a0a0a]">
+        </div>
+      </div>
+
+      <!-- Карточка шутки (Glassmorphism) -->
+      <div id="jokeCard" class="w-full max-w-[340px] bg-white/5 backdrop-blur-xl border border-white/10 rounded-[20px] p-6 mb-5 shadow-2xl relative transition-all duration-300">
+        <div class="text-3xl text-[rgba(212,175,55,0.5)] leading-none mb-2">"</div>
+        <div id="jokeText" class="text-[15px] leading-relaxed text-white/95 text-center min-h-[80px] flex items-center justify-center">Загрузка шутки...</div>
+        <div class="mt-3 text-center text-[11px] text-[rgba(212,175,55,0.8)] uppercase tracking-widest font-semibold" id="jokeFooter">ЧАК НОРРИС • #ФАКТ</div>
+      </div>
+
+      <!-- Кнопка НОВАЯ ШУТКА -->
+      <button id="btnNew" class="w-full max-w-[340px] py-4 bg-gradient-to-r from-red-600 to-red-800 border-none rounded-xl text-white text-sm font-bold uppercase tracking-[2px] cursor-pointer shadow-lg shadow-red-900/50 transition-transform active:scale-[0.97] flex items-center justify-center gap-2 mb-4">
+        <span>👊</span> <span>НОВАЯ ШУТКА</span>
+      </button>
+
+      <!-- Кнопки действий -->
+      <div class="flex gap-3 justify-center">
+        <button id="btnSave" class="w-11 h-11 rounded-full bg-white/5 border border-[rgba(212,175,55,0.3)] text-[rgba(212,175,55,0.9)] text-lg flex items-center justify-center transition-all active:scale-90">☆</button>
+        <button id="btnShare" class="w-11 h-11 rounded-full bg-white/5 border border-[rgba(212,175,55,0.3)] text-[rgba(212,175,55,0.9)] text-lg flex items-center justify-center transition-all active:scale-90">📤</button>
+        <button id="btnSpeak" class="w-11 h-11 rounded-full bg-white/5 border border-[rgba(212,175,55,0.3)] text-[rgba(212,175,55,0.9)] text-lg flex items-center justify-center transition-all active:scale-90">🔊</button>
+        <button id="btnCopy" class="w-11 h-11 rounded-full bg-white/5 border border-[rgba(212,175,55,0.3)] text-[rgba(212,175,55,0.9)] text-lg flex items-center justify-center transition-all active:scale-90">📋</button>
+      </div>
+    </div>
+
+    <!-- ЭКРАН КАТЕГОРИЙ -->
+    <div id="screen-categories" class="screen hidden relative z-10 h-full overflow-y-auto no-scrollbar pt-16 px-4 pb-24 fade-in">
+      <div id="categoriesGrid" class="grid grid-cols-3 gap-3"></div>
+    </div>
+
+    <!-- ЭКРАН ИЗБРАННОГО -->
+    <div id="screen-favorites" class="screen hidden relative z-10 h-full overflow-y-auto no-scrollbar pt-16 px-4 pb-24 fade-in">
+      <div class="text-center text-[#D4AF37] text-lg font-bold uppercase tracking-widest mb-5">⭐ Избранное</div>
+      <div id="favoritesList" class="flex flex-col gap-3"></div>
+    </div>
+
+    <!-- Нижняя навигация -->
+    <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[rgba(10,10,10,0.95)] backdrop-blur-xl border-t border-[rgba(212,175,55,0.2)] px-5 pb-8 pt-3 flex justify-around z-40">
+      <div class="nav-btn active flex flex-col items-center gap-1 p-1 text-[#D4AF37] cursor-pointer" data-screen="screen-main">
+        <span class="text-xl">👊</span>
+        <span class="text-[9px] font-bold uppercase tracking-wider">Шутки</span>
+      </div>
+      <div class="nav-btn flex flex-col items-center gap-1 p-1 text-white/40 cursor-pointer transition-colors" data-screen="screen-categories">
+        <span class="text-xl">📂</span>
+        <span class="text-[9px] font-bold uppercase tracking-wider">Категории</span>
+      </div>
+      <div class="nav-btn flex flex-col items-center gap-1 p-1 text-white/40 cursor-pointer transition-colors" data-screen="screen-favorites">
+        <span class="text-xl">⭐</span>
+        <span class="text-[9px] font-bold uppercase tracking-wider">Избранное</span>
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    // === КОНФИГУРАЦИЯ ===
+    const API_BASE = 'https://api.chucknorris.io';
+    const TRANSLATE_API = 'https://api.mymemory.translated.net/get';
+    const PHOTOS = [
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Chuck_Norris_May_2015.jpg/440px-Chuck_Norris_May_2015.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Chuck_Norris_2007.jpg/440px-Chuck_Norris_2007.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Chuck_Norris_2012.jpg/440px-Chuck_Norris_2012.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Chuck_Norris_2015.jpg/440px-Chuck_Norris_2015.jpg'
+    ];
+    const CATEGORIES = [
+      { id: 'animal', icon: '🐾', name: 'Животные' }, { id: 'career', icon: '💼', name: 'Карьера' },
+      { id: 'dev', icon: '💻', name: 'IT' }, { id: 'food', icon: '🍔', name: 'Еда' },
+      { id: 'movie', icon: '🎬', name: 'Кино' }, { id: 'music', icon: '🎵', name: 'Музыка' },
+      { id: 'science', icon: '🔬', name: 'Наука' }, { id: 'sport', icon: '⚽', name: 'Спорт' }
+    ];
+
+    let currentJoke = null;
+    let favorites = JSON.parse(localStorage.getItem('chuckFavorites') || '[]');
+    let photoIndex = 0;
+
+    // === ЧАСТИЦЫ ===
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle absolute w-[3px] h-[3px] bg-[rgba(212,175,55,0.8)] rounded-full shadow-[0_0_10px_rgba(212,175,55,1)]';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDelay = Math.random() * 12 + 's';
+      particlesContainer.appendChild(p);
+    }
+
+    // === ЛОГИКА ===
+    async function translate(text) {
+      try {
+        const res = await fetch(`${TRANSLATE_API}?q=${encodeURIComponent(text)}&langpair=en|ru`);
+        const data = await res.json();
+        return data.responseData?.translatedText || text;
+      } catch { return text; }
+    }
+
+    async function fetchJoke(category = null) {
+      document.getElementById('loader').classList.remove('hidden');
+      try {
+        const url = category ? `${API_BASE}/jokes/random?category=${category}` : `${API_BASE}/jokes/random`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const translated = await translate(data.value);
+        currentJoke = { ...data, translated };
+        
+        document.getElementById('jokeText').textContent = translated;
+        photoIndex = (photoIndex + 1) % PHOTOS.length;
+        document.getElementById('chuckPhoto').src = PHOTOS[photoIndex];
+        updateSaveBtn();
+      } catch { showToast('Ошибка загрузки'); } 
+      finally { document.getElementById('loader').classList.add('hidden'); }
+    }
+
+    function updateSaveBtn() {
+      if (!currentJoke) return;
+      const saved = favorites.some(f => f.id === currentJoke.id);
+      const btn = document.getElementById('btnSave');
+      btn.className = `w-11 h-11 rounded-full border text-lg flex items-center justify-center transition-all active:scale-90 ${saved ? 'bg-[rgba(212,175,55,0.3)] border-[#D4AF37] text-[#FFD700]' : 'bg-white/5 border-[rgba(212,175,55,0.3)] text-[rgba(212,175,55,0.9)]'}`;
+      btn.textContent = saved ? '⭐' : '☆';
+    }
+
+    document.getElementById('btnSave').onclick = () => {
+      if (!currentJoke) return;
+      const idx = favorites.findIndex(f => f.id === currentJoke.id);
+      if (idx > -1) { favorites.splice(idx, 1); showToast('Удалено'); } 
+      else { favorites.unshift({ id: currentJoke.id, text: currentJoke.translated }); showToast('Сохранено ⭐'); }
+      localStorage.setItem('chuckFavorites', JSON.stringify(favorites));
+      updateSaveBtn(); renderFavorites();
+    };
+
+    document.getElementById('btnShare').onclick = () => { if (currentJoke && navigator.share) navigator.share({ title: 'Чак Норрис', text: currentJoke.translated }); };
+    document.getElementById('btnSpeak').onclick = () => { if (currentJoke && 'speechSynthesis' in window) { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(currentJoke.translated); u.lang = 'ru-RU'; speechSynthesis.speak(u); } };
+    document.getElementById('btnCopy').onclick = () => { if (currentJoke) { navigator.clipboard.writeText(currentJoke.translated); showToast('Скопировано 📋'); } };
+    document.getElementById('btnNew').onclick = () => fetchJoke();
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.remove('opacity-0', 'translate-y-10'); t.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => { t.classList.add('opacity-0', 'translate-y-10'); t.classList.remove('opacity-100', 'translate-y-0'); }, 2000);
+    }
+
+    // Навигация
+    document.querySelectorAll('.nav-btn').forEach(item => {
+      item.onclick = () => {
+        document.querySelectorAll('.screen').forEach(s => { s.classList.add('hidden'); s.classList.remove('active'); });
+        document.querySelectorAll('.nav-btn').forEach(n => { n.classList.remove('text-[#D4AF37]', 'active'); n.classList.add('text-white/40'); });
+        document.getElementById(item.dataset.screen).classList.remove('hidden');
+        document.getElementById(item.dataset.screen).classList.add('active');
+        item.classList.remove('text-white/40'); item.classList.add('text-[#D4AF37]', 'active');
+        if (item.dataset.screen === 'screen-favorites') renderFavorites();
+      };
+    });
+
+    // Категории
+    const catGrid = document.getElementById('categoriesGrid');
+    CATEGORIES.forEach(cat => {
+      const div = document.createElement('div');
+      div.className = 'bg-white/5 border border-[rgba(212,175,55,0.2)] rounded-2xl p-5 text-center cursor-pointer transition-all active:scale-95 active:bg-[rgba(212,175,55,0.1)]';
+      div.innerHTML = `<div class="text-3xl mb-2">${cat.icon}</div><div class="text-[10px] text-[rgba(212,175,55,0.9)] font-bold uppercase tracking-wider">${cat.name}</div>`;
+      div.onclick = () => {
+        document.querySelectorAll('.screen').forEach(s => { s.classList.add('hidden'); s.classList.remove('active'); });
+        document.querySelectorAll('.nav-btn').forEach(n => { n.classList.remove('text-[#D4AF37]', 'active'); n.classList.add('text-white/40'); });
+        document.getElementById('screen-main').classList.remove('hidden'); document.getElementById('screen-main').classList.add('active');
+        document.querySelector('[data-screen="screen-main"]').classList.remove('text-white/40'); document.querySelector('[data-screen="screen-main"]').classList.add('text-[#D4AF37]', 'active');
+        fetchJoke(cat.id);
+      };
+      catGrid.appendChild(div);
+    });
+
+    function renderFavorites() {
+      const list = document.getElementById('favoritesList');
+      if (favorites.length === 0) { list.innerHTML = '<div class="text-center text-white/40 py-10">Нет сохранённых шуток</div>'; return; }
+      list.innerHTML = favorites.map((f, i) => `<div class="bg-white/5 border border-[rgba(212,175,55,0.1)] rounded-xl p-4 flex gap-3 items-center"><div class="flex-1 text-[13px] leading-relaxed text-white/90">${f.text}</div><button class="text-white/30 text-xl px-2 py-1 active:text-red-500" onclick="deleteFav(${i})">×</button></div>`).join('');
+    }
+    window.deleteFav = (i) => { favorites.splice(i, 1); localStorage.setItem('chuckFavorites', JSON.stringify(favorites)); renderFavorites(); if (currentJoke) updateSaveBtn(); };
+
+    // Старт
+    fetchJoke();
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+  </script>
+</body>
 </html>
