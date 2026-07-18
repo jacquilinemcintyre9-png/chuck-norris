@@ -7,11 +7,11 @@ const Nav = styled.nav`
   bottom: 0;
   left: 0;
   right: 0;
-  height: 70px;
-  background: rgba(10, 10, 15, 0.9);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 0, 0, 0.1);
+  height: 64px;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -23,29 +23,27 @@ const NavItem = styled(NavLink)`
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 8px 20px;
-  border-radius: 16px;
-  color: #4a4a5a;
+  padding: 6px 16px;
+  border-radius: 12px;
+  color: #555;
   text-decoration: none;
   transition: all 0.3s ease;
   font-family: 'Oswald', sans-serif;
   &.active {
-    color: #ff0000;
-    text-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
-    background: rgba(255, 0, 0, 0.05);
+    color: #D4AF37;
   }
   .icon {
-    font-size: 24px;
+    font-size: 20px;
     transition: transform 0.2s;
   }
   .label {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
   }
   &:hover .icon {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 `;
 
