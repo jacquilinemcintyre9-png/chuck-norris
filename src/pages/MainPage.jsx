@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { useApp } from '../context/AppContext';
-import { useJoke } from '../hooks/useJoke';
+import React, { useEffect, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
-import PhotoFrame from '../components/PhotoFrame';
-import JokeCard from '../components/JokeCard';
-import ActionButtons from '../components/ActionButtons';
+import { useApp } from '../context/AppContext';
+import { useJoke } from '../hooks/useJoke';
+import { PhotoFrame } from '../components/PhotoFrame';
+import { JokeCard } from '../components/JokeCard';
+import { ActionButtons } from '../components/ActionButtons';
 
 const PHOTOS = [
   'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Chuck_Norris_May_2015.jpg/440px-Chuck_Norris_May_2015.jpg',
@@ -22,25 +22,29 @@ const PHOTOS = [
   'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Chuck_Norris_2024.jpg/440px-Chuck_Norris_2024.jpg'
 ];
 
-const liquidGold = keyframes`
+const neonGlow = keyframes`
+  0% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.2); }
+  100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+`;
+
+const borderGlow = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 `;
 
-const GlowWrapper = styled(motion.div)`
+const GlowWrapper = styled.div`
   padding: 3px;
-  background: linear-gradient(90deg, #b8860b, #d4af37, #fff8dc, #d4af37, #b8860b);
+  background: linear-gradient(90deg, #D4AF37, #FFF8DC, #D4AF37, #B8860B, #D4AF37);
   background-size: 300% 100%;
   border-radius: 20px;
-  animation: ${liquidGold} 4s ease-in-out infinite;
+  animation: ${borderGlow} 4s ease-in-out infinite, ${neonGlow} 2s ease-in-out infinite;
   width: 100%;
   max-width: 340px;
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
-  transition: all 0.3s ease;
+  transition: transform 0.2s;
   &:hover {
-    box-shadow: 0 0 60px rgba(212, 175, 55, 0.3);
-    transform: scale(1.02);
+    transform: scale(1.03);
   }
   &:active {
     transform: scale(0.97);
@@ -52,21 +56,21 @@ const StyledButton = styled.button`
   padding: 20px;
   border-radius: 18px;
   border: none;
-  background: #0a0a12;
-  color: #d4af37;
+  background: linear-gradient(135deg, #0D0D0D, #1A1A1A);
+  color: #D4AF37;
   font-family: 'Oswald', sans-serif;
   font-size: 20px;
-  font-weight: 500;
-  letter-spacing: 6px;
+  font-weight: 700;
+  letter-spacing: 5px;
   text-transform: uppercase;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 14px;
-  transition: background 0.3s ease;
+  transition: background 0.2s;
   &:active {
-    background: #12121e;
+    background: #2A2A2A;
   }
 `;
 
@@ -75,39 +79,13 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 20px 0;
+  padding: 30px 20px 0;
   overflow-y: auto;
-  padding-bottom: 80px;
-`;
-
-const Header = styled(motion.div)`
-  text-align: center;
-  margin-bottom: 16px;
-  margin-top: 4px;
-`;
-
-const Title = styled.h1`
-  font-family: 'Oswald', sans-serif;
-  font-size: 32px;
-  font-weight: 300;
-  letter-spacing: 12px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
-`;
-
-const Subtitle = styled.p`
-  font-family: 'Georgia', serif;
-  font-size: 12px;
-  color: rgba(212, 175, 55, 0.6);
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  margin-top: 4px;
-  font-style: italic;
+  padding-bottom: 100px;
 `;
 
 const PhotoWrapper = styled(motion.div)`
-  margin-bottom: 28px;
+  margin-bottom: 30px;
 `;
 
 const JokeWrapper = styled(motion.div)`
@@ -116,14 +94,14 @@ const JokeWrapper = styled(motion.div)`
   justify-content: center;
 `;
 
-const ButtonWrapper = styled(motion.div)`
-  margin-top: 28px;
+const ButtonWrapper = styled.div`
+  margin-top: 30px;
   width: 100%;
   display: flex;
   justify-content: center;
 `;
 
-export default function MainPage() {
+export const MainPage = () => {
   const { state } = useApp();
   const { fetchJoke, joke, loading } = useJoke();
 
@@ -133,48 +111,34 @@ export default function MainPage() {
 
   const photoSrc = PHOTOS[state.photoIndex % PHOTOS.length] || PHOTOS[0];
 
-  const handleNewJoke = () => {
+  const handleNewJoke = useCallback(() => {
     fetchJoke();
-  };
+  }, [fetchJoke]);
 
   return (
     <Container>
-      <Header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-      >
-        <Title>Чак Норрис</Title>
-        <Subtitle>Легендарные факты</Subtitle>
-      </Header>
-
       <PhotoWrapper
-        initial={{ scale: 0.8, opacity: 0 }}
+        initial={{ scale: 0.6, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 25, delay: 0.1 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 25 }}
       >
         <PhotoFrame src={photoSrc} />
       </PhotoWrapper>
 
       {joke && (
         <JokeWrapper
-          key={joke.value}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.15 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
         >
           <JokeCard joke={joke.value} loading={loading} />
         </JokeWrapper>
       )}
 
-      <ButtonWrapper
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-      >
+      <ButtonWrapper>
         <GlowWrapper>
           <StyledButton onClick={handleNewJoke}>
-            <span>👊</span> Новая шутка
+            <span>👊</span> НОВАЯ ШУТКА
           </StyledButton>
         </GlowWrapper>
       </ButtonWrapper>
@@ -182,4 +146,4 @@ export default function MainPage() {
       <ActionButtons joke={joke} />
     </Container>
   );
-}
+};

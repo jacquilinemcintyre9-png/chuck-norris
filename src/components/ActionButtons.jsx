@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 
-const Wrapper = styled(motion.div)`
+const Wrapper = styled.div`
   margin-top: 24px;
   display: flex;
   gap: 20px;
@@ -11,88 +10,72 @@ const Wrapper = styled(motion.div)`
   justify-content: center;
 `;
 
-const IconBtn = styled(motion.button)`
-  width: 58px;
-  height: 58px;
+const IconBtn = styled.button`
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  color: rgba(212, 175, 55, 0.7);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #D4AF37;
   cursor: pointer;
-  font-size: 22px;
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   &:hover {
-    background: rgba(212, 175, 55, 0.08);
-    border-color: rgba(212, 175, 55, 0.2);
-    color: #d4af37;
+    background: rgba(212, 175, 55, 0.15);
+    border-color: #D4AF37;
     transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 12px 32px rgba(212, 175, 55, 0.2);
   }
   &:active {
     transform: scale(0.92);
-    background: rgba(139, 0, 0, 0.2);
-    border-color: #d4af37;
+    background: rgba(139, 0, 0, 0.3);
+    border-color: #D4AF37;
   }
 `;
 
-export default function ActionButtons({ joke }) {
+export const ActionButtons = React.memo(({ joke }) => {
   const { state, dispatch } = useApp();
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (joke && !state.favorites.includes(joke.value)) {
       dispatch({ type: 'TOGGLE_FAVORITE', payload: joke.value });
     }
-  };
+  }, [joke, state.favorites, dispatch]);
 
-  const handleShare = () => {
+  const handleShare = useCallback(() => {
     if (navigator.share && joke) {
       navigator.share({ title: 'Чак Норрис', text: joke.value });
     } else if (joke) {
       alert(joke.value);
     }
-  };
+  }, [joke]);
 
-  const handleSpeak = () => {
+  const handleSpeak = useCallback(() => {
     if ('speechSynthesis' in window && joke) {
       const utter = new SpeechSynthesisUtterance(joke.value);
       utter.lang = 'ru-RU';
       speechSynthesis.speak(utter);
     }
-  };
+  }, [joke]);
 
-  const handleCopy = () => {
+  const handleCopy = useCallback(() => {
     if (joke) {
       navigator.clipboard.writeText(joke.value).then(() => alert('Скопировано! 📋'));
     }
-  };
-
-  const btnVariants = {
-    hidden: { opacity: 0, scale: 0.5 },
-    visible: (i) => ({
-      opacity: 1,
-      scale: 1,
-      transition: { delay: i * 0.05, duration: 0.4, ease: 'easeOut' }
-    })
-  };
+  }, [joke]);
 
   return (
-    <Wrapper
-      initial="hidden"
-      animate="visible"
-      variants={{
-        visible: { transition: { staggerChildren: 0.05 } }
-      }}
-    >
-      <IconBtn custom={0} variants={btnVariants} onClick={handleSave} title="В избранное">⭐</IconBtn>
-      <IconBtn custom={1} variants={btnVariants} onClick={handleShare} title="Поделиться">📤</IconBtn>
-      <IconBtn custom={2} variants={btnVariants} onClick={handleSpeak} title="Озвучить">🔊</IconBtn>
-      <IconBtn custom={3} variants={btnVariants} onClick={handleCopy} title="Копировать">📋</IconBtn>
+    <Wrapper>
+      <IconBtn onClick={handleSave} title="В избранное">⭐</IconBtn>
+      <IconBtn onClick={handleShare} title="Поделиться">📤</IconBtn>
+      <IconBtn onClick={handleSpeak} title="Озвучить">🔊</IconBtn>
+      <IconBtn onClick={handleCopy} title="Копировать">📋</IconBtn>
     </Wrapper>
   );
-}
+});

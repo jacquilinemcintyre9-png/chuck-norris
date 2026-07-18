@@ -8,15 +8,14 @@ const Nav = styled.nav`
   left: 0;
   right: 0;
   height: 70px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(13, 13, 13, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   justify-content: space-around;
   align-items: center;
   z-index: 50;
-  padding-bottom: env(safe-area-inset-bottom);
 `;
 
 const NavItem = styled(NavLink)`
@@ -24,14 +23,16 @@ const NavItem = styled(NavLink)`
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 8px 16px;
-  border-radius: 14px;
-  color: rgba(255, 255, 255, 0.4);
+  padding: 8px 20px;
+  border-radius: 16px;
+  color: #71797E;
   text-decoration: none;
   transition: all 0.3s ease;
   font-family: 'Oswald', sans-serif;
-  position: relative;
-  
+  &.active {
+    color: #D4AF37;
+    background: rgba(212, 175, 55, 0.1);
+  }
   .icon {
     font-size: 24px;
     transition: transform 0.2s;
@@ -40,23 +41,14 @@ const NavItem = styled(NavLink)`
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
   }
-
-  &.active {
-    color: #D4AF37;
-    background: rgba(212, 175, 55, 0.12);
-    .icon {
-      transform: scale(1.1);
-    }
-  }
-
-  &:hover {
-    color: rgba(255, 255, 255, 0.7);
+  &:hover .icon {
+    transform: scale(1.1);
   }
 `;
 
-export default function Navigation() {
+export const Navigation = () => {
   return (
     <Nav>
       <NavItem to="/" end>
@@ -73,4 +65,4 @@ export default function Navigation() {
       </NavItem>
     </Nav>
   );
-}
+};
